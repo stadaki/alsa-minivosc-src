@@ -1,7 +1,7 @@
 Minimal virtual oscillator (minivosc) soundcard on Debian wheezy
 
 
-Since was not able to be build on Debian wheezy, it modified.
+I made modifications because it was not able to build on Debina wheezy.
 
 Minivosc
 http://www.alsa-project.org/main/index.php/Minivosc
