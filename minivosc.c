@@ -59,6 +59,7 @@ static int debug = 1;
 #include <sound/control.h>
 #include <sound/pcm.h>
 #include <sound/initval.h>
+#include <linux/version.h>
 
 MODULE_AUTHOR("sdaau");
 MODULE_DESCRIPTION("minivosc soundcard");
@@ -148,8 +149,14 @@ static int __init alsa_card_minivosc_init(void);
 static void __exit alsa_card_minivosc_exit(void);
 
 // * declare functions for this struct describing the driver (to be defined later):
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3,8,0)
 static int __devinit minivosc_probe(struct platform_device *devptr);
 static int __devexit minivosc_remove(struct platform_device *devptr);
+#else
+static int minivosc_probe(struct platform_device *devptr);
+static int minivosc_remove(struct platform_device *devptr);
+#endif
+
 
 // * here declaration of functions that will need to be in _ops, before they are defined
 static int minivosc_hw_params(struct snd_pcm_substream *ss,
@@ -201,7 +208,11 @@ static struct snd_device_ops dev_ops =
 static struct platform_driver minivosc_driver =
 {
 	.probe		= minivosc_probe,
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3,8,0)
 	.remove		= __devexit_p(minivosc_remove),
+#else
+	.remove		= minivosc_remove,
+#endif
 //~ #ifdef CONFIG_PM
 	//~ .suspend	= minivosc_suspend,
 	//~ .resume	= minivosc_resume,
@@ -218,7 +229,11 @@ static struct platform_driver minivosc_driver =
  * Probe/remove functions
  *
  */
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3,8,0)
 static int __devinit minivosc_probe(struct platform_device *devptr)
+#else
+static int minivosc_probe(struct platform_device *devptr)
+#endif
 {
 
 	struct snd_card *card;
@@ -307,7 +322,11 @@ __nodev: // as in aloop/dummy...
 }
 
 // from dummy/aloop:
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3,8,0)
 static int __devexit minivosc_remove(struct platform_device *devptr)
+#else
+static int minivosc_remove(struct platform_device *devptr)
+#endif
 {
 	dbg("%s", __func__);
 	snd_card_free(platform_get_drvdata(devptr));
